@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @RestController
 //@RequestMapping("/v1")
@@ -23,12 +25,15 @@ public class MovieInfoController {
 
 	 @Autowired
 	 MovieInfoRepo repo;
+	 
+	 Sinks.Many<MovieInfo> moviesInfoSink=Sinks.many().replay().all();
 	
 	@PostMapping("/moviesInfo")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Mono<MovieInfo> addNewMovieInfo(@RequestBody @Valid MovieInfo movieInfo)
 	{
-	   return repo.save(movieInfo);	
+	   return repo.save(movieInfo)
+			   .doOnNext(savedInfo->moviesInfoSink.tryEmitNext(savedInfo));	
 	}
 	
 	@GetMapping("/AllmoviesInfo")
@@ -36,6 +41,15 @@ public class MovieInfoController {
 	{
      return repo.findAll();		
  	}
+	
+	
+	 @GetMapping(value="/movieInfo/stream",produces=MediaType.APPLICATION_JSON_VALUE)
+		
+		public Flux<MovieInfo> getMovieByStream()
+		{
+	   return moviesInfoSink.asFlux().log();
+	 	}
+	
 	
 	 @GetMapping("/movieInfo/{id}")
 	
@@ -46,6 +60,8 @@ public class MovieInfoController {
 	    		 switchIfEmpty(Mono.just(ResponseEntity.noContent().build()));
 	    	
 	 	}
+	 
+	 
 	 
 	 @DeleteMapping("/deleteAll")
 	 public Mono<String> deleteAllMovie()
