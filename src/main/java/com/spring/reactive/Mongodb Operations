@@ -1,0 +1,181 @@
+Relational DB        MongoDB
+   database           database
+   table              collection
+   row                document( like as js object )
+   column             field
+
+
+
+
+
+                   Intel Processor               Apple Silicon Processor
+configuration file   /usr/local/etc/mongod.conf     /opt/homebrew/etc/mongod.conf
+
+
+log directory         /usr/local/var/log/mongodb    /opt/homebrew/var/log/mongodb
+
+
+data directory       /usr/local/var/mongodb         /opt/homebrew/var/mongodb
+
+
+
+
+brew services start mongodb/brew/mongodb-community
+brew services stop mongodb/brew/mongodb-community
+ps aux | grep mongod
+kill -9 <PID>
+
+mongod --dbpath /Users/rishabhsharma/Desktop/mongodb/data/db
+
+
+show dbs ( to check data bases)
+
+use dbname
+
+create Operation
+db.MovieInfo.insertOne({
+  movieInfoId: "1234",
+  name: "Inception",
+  year: 2011,
+  cast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+  releaseDate: "2010-07-16"
+});
+
+
+db.movieInfo.insertMany([
+{
+  movieInfoId: "1234",
+  name: "Inception",
+  year: 2011,
+  cast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+  releaseDate: "2010-07-16"
+},
+{
+  movieInfoId: "123",
+  name: "harry",
+  year: 2019,
+  cast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+  releaseDate: "2019-07-16"
+}
+]
+);
+
+Read Operation
+
+db.MovieInfo.find()
+
+db.MovieInfo.find({ name: "harry" });
+3. Find with Multiple Conditions (AND)
+Use multiple conditions that all need to be true.
+db.MovieInfo.find({ name: "Inception", year: 2010 });
+4. Find with OR Condition
+Use $or to match any condition.
+db.MovieInfo.find({
+  $or: [{ name: "Inception" }, { year: 2010 }]
+});
+5. Find with Greater Than or Less Than
+Use $gt, $gte, $lt, $lte for range queries.
+db.MovieInfo.find({ year: { $gte: 2000, $lte: 2015 } });
+6. Find with Regular Expression
+Use a regex to match patterns.
+db.MovieInfo.find({ name: { $regex: /^In/, $options: "i" } });
+7. Find Documents with Specific Array Elements
+Find documents where an array contains a specific value.
+db.MovieInfo.find({ cast: "Leonardo DiCaprio" });
+8. Find Documents Matching Multiple Array Elements
+Use $all to match all specified elements in an array.
+db.MovieInfo.find({ cast: { $all: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"] } });
+
+Find Documents Where Field Exists
+Use $exists to check if a field is present.
+db.MovieInfo.find({ releaseDate: { $exists: true } });
+
+10. Find with Projection
+Limit the fields returned in the result.
+db.MovieInfo.find({ name: "Inception" }, { name: 1, year: 1, _id: 0 });
+
+11. Find with Sorting
+Sort results by a field in ascending or descending order.
+db.MovieInfo.find().sort({ year: -1 }); // Descending order
+
+12. Find with Pagination
+Use skip and limit for pagination.
+db.MovieInfo.find().skip(10).limit(5); // Skip 10 documents, show next 5
+
+13. Find with Nested Documents
+Query fields inside nested documents.
+db.MovieInfo.find({ "nestedField.subField": "value" });
+
+14. Find with Type Checking
+Match documents where a field has a specific data type.
+db.MovieInfo.find({ year: { $type: "int" } });
+15. Find with Logical NOT
+Use $not to negate a condition.
+db.MovieInfo.find({ name: { $not: { $regex: /^In/ } } });
+16. Find with $in and $nin
+Use $in to match any value in a list, $nin to exclude them.
+db.MovieInfo.find({ year: { $in: [2000, 2010, 2020] } });
+db.MovieInfo.find({ year: { $nin: [2000, 2010, 2020] } });
+
+17. Find with $elemMatch for Arrays
+Match documents where at least one array element satisfies multiple conditions.
+db.MovieInfo.find({ cast: { $elemMatch: { $eq: "Leonardo DiCaprio" } } });
+
+
+MongoDB CRUD Operations for MovieInfo Collection
+1. Create Operation
+Insert a single document:
+db.MovieInfo.insertOne({
+movieInfoId: "12345",
+name: "Inception",
+year: 2010,
+cast: ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+releaseDate: "2010-07-16"
+});
+Insert multiple documents:
+db.MovieInfo.insertMany([
+{ movieInfoId: "12346", name: "Interstellar", year: 2014, cast: ["Matthew McConaughey", "Anne
+Hathaway"], releaseDate: "2014-11-07" },
+{ movieInfoId: "12347", name: "The Dark Knight", year: 2008, cast: ["Christian Bale", "Heath
+Ledger"], releaseDate: "2008-07-18" }
+]);
+2. Read Operation
+Find all documents:
+db.MovieInfo.find();
+Find with a filter (e.g., by name):
+db.MovieInfo.find({ name: "Inception" });
+Find movies released after 2010:
+db.MovieInfo.find({ year: { $gt: 2010 } });
+Find specific fields (projection):
+db.MovieInfo.find({ year: 2010 }, { name: 1, cast: 1, _id: 0 });
+Find with OR condition:
+db.MovieInfo.find({ $or: [ { year: 2010 }, { name: "Interstellar" } ] });
+3. Update Operation
+Update a single document:
+db.MovieInfo.updateOne(
+{ name: "Inception" },
+{ $set: { year: 2011, releaseDate: "2011-07-16" } }
+);
+Update multiple documents:
+db.MovieInfo.updateMany(
+{ year: { $lt: 2010 } },
+{ $set: { status: "Classic" } }
+);
+Upsert (update or insert if not exists):
+db.MovieInfo.updateOne(
+{ name: "Tenet" },
+{ $set: { year: 2020, releaseDate: "2020-08-26" } },
+{ upsert: true }
+);
+Rename a field:
+db.MovieInfo.updateMany(
+{},
+{ $rename: { "releaseDate": "premiereDate" } }
+);
+4. Delete Operation
+Delete a single document:
+db.MovieInfo.deleteOne({ name: "Inception" });
+Delete multiple documents:
+db.MovieInfo.deleteMany({ year: { $lt: 2000 } });
+Delete all documents in the collection:
+db.MovieInfo.deleteMany({});
