@@ -16,7 +16,6 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 @RestControllerAdvice
 public class GlobalErroHandler {
 
-	
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(GlobalErroHandler.class);
 	
