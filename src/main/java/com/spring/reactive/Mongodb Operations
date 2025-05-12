@@ -179,3 +179,9 @@ Delete multiple documents:
 db.MovieInfo.deleteMany({ year: { $lt: 2000 } });
 Delete all documents in the collection:
 db.MovieInfo.deleteMany({});
+
+
+
+Pagination in MongoDB allows you to retrieve a subset of results from a larger dataset,
+enabling efficient navigation through large collections. MongoDB provides two primary methods
+for implementing pagination: limit and skip or range-based pagination (using _id or another field).
